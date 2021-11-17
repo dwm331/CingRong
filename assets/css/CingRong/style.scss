@@ -1,2 +1,153 @@
+$colorBlue: #0080A5;
+$colorLightBlue: #CCE6ED;
+$colorlightYellow:#F0C933;
+$colorLightGrey: #F5F5F5;
+$colorBlack: #383838;
+
 .wrapper {
+    .main {
+        margin: 100px 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        .bannder_section {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
+            .menu {
+                padding: 12px 30px;
+                width: 350px;
+                box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.1);
+                overflow-y: hidden;
+                .nav_title {
+                    color: $colorBlack;
+                    padding: 12px 20px;
+                    background: $colorlightYellow;
+                    font-weight: 500;
+                    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.1);
+                    text-align: center;
+                }
+                .first_layer{
+                    height:calc(100vh - 180px);;
+                    overflow-y:scroll;
+                    >li{
+                        border-left: 1px solid $colorLightGrey;
+                        border-right: 1px solid $colorLightGrey;
+                        border-bottom: 1px solid $colorLightGrey;
+                        >a{
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            padding: 16px 22px;
+                            &.not-collapsed{
+                                &:after {
+                                    transform: rotate(180deg);
+                                }
+                            }
+                            &:active {
+                                background: $colorLightBlue;
+                            }
+                        }
+                        &.noBgColor {
+                            >a{
+                                background: none;
+                            }
+                        }
+                        &.hasSub {
+                            >a:after{
+                                content: '';
+                                display: block;
+                                width: 16px;
+                                height: 9px;
+                                background-image: url(/img/arrow_down.svg);
+                                background-size: contain;
+                                background-repeat: no-repeat;
+                                margin-left: 8px;
+                                transition: 0.15s ease-in-out ;
+                                background-position: center;
+                            }
+                        }
+                    }
+                    .active {
+                        > a {
+                            color: $colorlightYellow;
+                        }
+                    }
+                }
+                .second_layer{
+                    // padding: 16px 0px 16px 24px;
+                    >li{
+                        >a{
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            padding: 16px 16px 16px 46px;
+                            &.not-collapsed{
+                                &:after {
+                                    transform: rotate(180deg);
+                                }
+                            }
+                            &:active {
+                                background: $colorLightBlue;
+                            }
+                            >div {
+                                >img {
+                                    // background-color: red;
+                                    margin: 0 8px 0 0;
+                                    width: 21px;
+                                    height: 21px;
+                                }
+                            }
+                        } 
+                        &.activeBgColor {
+                            >a{
+                                background: $colorBlue;
+                            }
+                        }  
+                        &.hasSub {
+                            >a:after{
+                                content: '';
+                                display: block;
+                                width: 16px;
+                                height: 9px;
+                                background-image: url(/img/arrow_down.svg);
+                                background-size: contain;
+                                background-repeat: no-repeat;
+                                margin-right: 4px;
+                                transition: 0.15s ease-in-out ;
+                                background-position: center;
+                            }
+                        }
+                        &.lockArrowTrans{
+                            >a:after{
+                                content: '';
+                                display: block;
+                                width: 24px;
+                                height: 24px;
+                                background-image: url(/img/arrow_down.svg);
+                                background-size: contain;
+                                background-repeat: no-repeat;
+                                margin-left: 8px;
+                                background-position: center;
+                            }
+                        }
+                    }
+                    .active {
+                        > a {
+                            color: $colorBlue;
+                        }
+                    }
+                }
+            }
+            .content_section {
+                .banner {
+                    width: calc(100vw - 400px);
+                    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.1);
+                    .banner_title {
+                        color: $colorlightYellow;
+                    }
+                }
+            }
+        } 
+    }
 }
