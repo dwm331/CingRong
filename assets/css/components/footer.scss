@@ -1,0 +1,82 @@
+.footer {
+    padding: 50px 100px;
+    background-color: black;
+    color: white;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    @media (max-width: 428px) {
+        padding: 50px 50px;
+    }
+    > div:nth-child(1) {
+        width: 25%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        @media (max-width: 428px) {
+            width: 100%;
+        }
+        > div:nth-child(1) {
+            font-size: 30px;
+            font-weight: 500;
+            letter-spacing: 9px;
+        }
+        > div:nth-child(2) {
+            margin-top: 20px;
+            margin-bottom: 15px;
+            background-size: cover;
+            background-repeat: no-repeat;
+            // background-image: url(~/static/img/image5.jpg);
+            width: 100px;
+            height: 100px;
+            border-radius: 50px;
+        }
+        > div:nth-child(3) {
+            font-size: 26px;
+            font-weight: 300;
+            line-height: 18px;
+            letter-spacing: 0.5px;
+        }
+    }
+
+    .column {
+        padding-right: 60px;
+        @media (max-width: 428px) {
+            width: 100%;
+            margin-left: 0;
+            margin-top: 20px;
+        }
+        padding-top: 8px;
+        > div:nth-child(1) {
+            font-size: 26px;
+            font-weight: 500;
+            letter-spacing: 4px;
+        }
+        .content_box {
+            > div:nth-child(1) {
+                padding-top: 10px;
+                font-size: 26px;
+                line-height: 18px;
+            }
+            > div:nth-child(2) {
+                
+                font-size: 26px;
+                font-weight: 300;
+                line-height: 18px;
+                letter-spacing: 0.5px;
+                > a {
+                    color: white;
+                    text-decoration: underline;
+                    word-wrap:break-word;
+                }
+            }
+        }
+
+        .social {
+            padding-top: 50px;
+            > img {
+                margin-right: 10px;
+            }
+        }
+    }
+}
