@@ -41,6 +41,24 @@
                   </b-carousel-slide>
                </b-carousel>
             </div>
+            <div class="separator">商品列表</div>
+            <b-card-group columns class="product_list row deck" >
+               <b-card
+                  class="product_card"
+                  :title="prod.name"
+                  img-src="https://picsum.photos/600/300/?image=25"
+                  img-alt="Image"
+                  img-top
+                  v-for="(prod, prodIndex) in product" :key="prodIndex"
+               >
+                  <b-card-text>
+                     {{prod.info}}
+                  </b-card-text>
+                  <b-card-text class="product_tags">
+                     <span v-for="(tag, tagIndex) in prod.categories" :key="tagIndex">{{tag}}．</span>
+                  </b-card-text>
+               </b-card>
+            </b-card-group>
          </div>
       </div>
     </div>
@@ -95,7 +113,17 @@ export default {
                   name: '品牌三'
                }
             ]
-         }]
+         }],
+         product: [
+            {name: "口罩", src: "", info: "Some quick example text to build on the card title.", categories: ["DIY拼接", "修繕/水電材料", "百貨"]},
+            {name: "清潔劑", src: "", info: "Some quick example text to build on the card title.", categories: ["DIY拼接", "修繕/水電材料", "百貨"]},
+            {name: "包裝袋", src: "", info: "Some quick example text to build on the card title.", categories: ["防疫專區", "DIY拼接"]},
+            {name: "膠帶", src: "", info: "", categories: ["防疫專區", "DIY拼接"]},
+            {name: "南寶樹脂白膠", src: "", info: "", categories: ["防疫專區", "DIY拼接", "DIY五金"]},
+            {name: "油漆", src: "", info: "", categories: ["防疫專區", "DIY五金"]},
+            {name: "網路線", src: "", info: "", categories: ["防疫專區", "DIY五金"]},
+            {name: "黏著劑", src: "", info: "", categories: ["防疫專區", "百貨"]},
+         ]
       }
    }
 };

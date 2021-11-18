@@ -2,46 +2,18 @@
   <div class="footer">
     <div>
       <div>慶榮五金行</div>
-      <div></div>
       <div>
-        <p>-----  -----</p>
-        <p>-----  -----</p>
-        <p>-----  -----</p>
+        <p>----- 五金零售．批發 -----</p>
+        <p>----- 機械器具零售 -----</p>
+        <p>----- 建材批發 -----</p>
       </div>
-    </div>
-    <div class="column">
-      <div>聯絡資訊</div>
-      <div class="content_box">
-        <div>
-          <p>地址</p>
-        </div>
-        <div>
-          <p></p>
-        </div>
+      <div>
+        <p>統一編號 10833501</p>
+        <p>聯絡人 杜先生</p>
+        <p>信箱 @gmail.com</p>
       </div>
-      <div class="content_box">
-        <div>
-          <p>統一編號</p>
-        </div>
-        <div>
-          <p>10833501</p>
-        </div>
-      </div>
-      <div class="content_box">
-        <div>
-          <p>聯絡人</p>
-        </div>
-        <div>
-          <p></p>
-        </div>
-      </div>
-      <div class="content_box">
-        <div>
-          <p>信箱</p>
-        </div>
-        <div>
-          <a href=""></a>
-        </div>
+      <div>
+        <p></p>
       </div>
     </div>
   </div>
