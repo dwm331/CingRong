@@ -19,6 +19,23 @@ export default {
   },
   methods: {
     login() {
+         this.$store
+        .dispatch("auth/signInWithEmail", {
+          email: this.formEmail,
+          password: this.formPassword,
+        })
+        .then((data) => {
+          if (data.status === "success") {
+            const user = data.user;
+            console.log("[Signed in]", this.formEmail);
+            window.location.href = './admin/management';
+          } else {
+            console.log(error.message);
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            window.location.href = './admin/management';
+          }
+        });
     },
   },
 };
