@@ -11,12 +11,12 @@
                   <b-collapse :id="'wrap_subList-'+category.name" role="tabpanel" class="wrap_subList">
                      <ul class="second_layer">
                         <li v-for="(subCategory, subIndex) in category.subCategories" :key="'sub'+subIndex" class="subList"  :class="{'hasSub': subCategory.subCategories}">
-                           <nuxt-link to="/" v-b-toggle="`wrap_detailList-${subCategory.name}`">     
+                           <nuxt-link to="/" v-b-toggle="`wrap_detailList-${subCategory.name}`">
                               {{ subCategory.name }}
                            </nuxt-link>
                         </li>
                      </ul>
-                  </b-collapse>   
+                  </b-collapse>
                </li>
             </ul>
          </div>
@@ -46,7 +46,7 @@
                <b-card
                   class="product_card"
                   :title="prod.name"
-                  img-src="https://picsum.photos/600/300/?image=25"
+                  :img-src="prod.src"
                   img-alt="Image"
                   img-top
                   v-for="(prod, prodIndex) in product" :key="prodIndex"
@@ -71,11 +71,11 @@ export default {
    data() {
       return {
          banners: [
-            {href: "https://picsum.photos/1024/480", title: "單筆訂單滿999免運<br>門市取貨199免運", message: ""},
-            {href: "https://picsum.photos/1024/480", title: "線上訂購系統全新上線", message: ""},
-            {href: "https://picsum.photos/1024/480", title: "防疫後生活", message: "官網、蝦皮、門市同步販售"},
-            {href: "https://picsum.photos/1024/480", title: "居家收納．歲末大掃除", message: "DIY五金 ｜ 收納工具 | 清潔用品"},
-            {href: "https://picsum.photos/1024/480", title: "新商品上市", message: ""}
+            {href: "/img/banner/istockphoto-1307328937-612x612.png", title: "單筆訂單滿999免運<br>門市取貨199免運", message: ""},
+            {href: "/img/banner/screw.png", title: "線上訂購系統全新上線", message: ""},
+            {href: "/img/banner/istockphoto-1307328937-612x612.png", title: "防疫後生活", message: "官網、蝦皮、門市同步販售"},
+            {href: "/img/banner/screw.png", title: "居家收納．歲末大掃除", message: "DIY五金 ｜ 收納工具 | 清潔用品"},
+            {href: "/img/banner/istockphoto-1307328937-612x612.png", title: "新商品上市", message: ""}
          ],
          categories: [{
             name: '防疫專區'
@@ -115,14 +115,14 @@ export default {
             ]
          }],
          product: [
-            {name: "口罩", src: "", info: "Some quick example text to build on the card title.", categories: ["DIY拼接", "修繕/水電材料", "百貨"]},
-            {name: "清潔劑", src: "", info: "Some quick example text to build on the card title.", categories: ["DIY拼接", "修繕/水電材料", "百貨"]},
-            {name: "包裝袋", src: "", info: "Some quick example text to build on the card title.", categories: ["防疫專區", "DIY拼接"]},
-            {name: "膠帶", src: "", info: "", categories: ["防疫專區", "DIY拼接"]},
-            {name: "南寶樹脂白膠", src: "", info: "", categories: ["防疫專區", "DIY拼接", "DIY五金"]},
-            {name: "油漆", src: "", info: "", categories: ["防疫專區", "DIY五金"]},
-            {name: "網路線", src: "", info: "", categories: ["防疫專區", "DIY五金"]},
-            {name: "黏著劑", src: "", info: "", categories: ["防疫專區", "百貨"]},
+            {name: "五金量測工具", src: "/img/sicon/7558265_measure_scale_weight_icon.svg", info: "Some quick example text to build on the card title.", categories: ["DIY拼接", "修繕/水電材料", "百貨"]},
+            {name: "裝潢工具", src: "/img/sicon/4622506_drill_kit_labor_mechanic_tool_icon.svg", info: "Some quick example text to build on the card title.", categories: ["DIY拼接", "修繕/水電材料", "百貨"]},
+            {name: "鋁窗", src: "/img/sicon/7558302_door_entrance_lock_icon.svg", info: "Some quick example text to build on the card title.", categories: ["防疫專區", "DIY拼接"]},
+            {name: "工具燈", src: "/img/sicon/7558276_setting_configuration_gear_icon.svg", info: "", categories: ["防疫專區", "DIY拼接"]},
+            {name: "五金工具", src: "/img/sicon/7558279_machine_technology_communication_icon.svg", info: "", categories: ["防疫專區", "DIY拼接", "DIY五金"]},
+            {name: "螺絲組", src: "/img/sicon/7558287_nuts_groundnuts_dry fruit_icon.svg", info: "", categories: ["防疫專區", "DIY五金"]},
+            {name: "鋁門", src: "/img/sicon/7558294_door_entrance_home_icon.svg", info: "", categories: ["防疫專區", "DIY五金"]},
+            {name: "鋁梯", src: "/img/sicon/7558292_stepladder_construction_home_icon.svg", info: "", categories: ["防疫專區", "百貨"]},
          ]
       }
    }
