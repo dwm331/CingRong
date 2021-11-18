@@ -67,9 +67,11 @@
 </template>
 
 <script>
+import { DB } from "@/services/fireinit.js";
 export default {
    data() {
       return {
+         journals: [],
          banners: [
             {href: "./img/banner/istockphoto-1307328937-612x612.png", title: "單筆訂單滿999免運<br>門市取貨199免運", message: ""},
             {href: "./img/banner/screw.png", title: "線上訂購系統全新上線", message: ""},
@@ -125,7 +127,25 @@ export default {
             {name: "鋁梯", src: "./img/sicon/7558292_stepladder_construction_home_icon.svg", info: "", categories: ["防疫專區", "百貨"]},
          ]
       }
-   }
+   },
+   created() {
+    console.log("created")
+  },
+  async fetch() {
+    var data = DB.ref("/")
+
+    this.journals = await data.once("value", function (snapshot) {
+      console.log("data num:", snapshot.numChildren());
+    });
+
+    if (this.journals.exists() > 0) {
+      var datago = JSON.stringify(this.journals);
+      this.journals = JSON.parse(datago);
+    } else {
+      this.journals = [];
+    }
+    console.log(this.journals)
+  },
 };
 </script>
 <style>
