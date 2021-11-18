@@ -71,7 +71,8 @@ import { DB } from "@/services/fireinit.js";
 export default {
    data() {
       return {
-         journals: [],
+         slide: 0,
+         sliding: null,
          banners: [
             {href: "./img/banner/istockphoto-1307328937-612x612.png", title: "單筆訂單滿999免運<br>門市取貨199免運", message: ""},
             {href: "./img/banner/screw.png", title: "線上訂購系統全新上線", message: ""},
@@ -126,6 +127,14 @@ export default {
             {name: "鋁門", src: "./img/sicon/7558294_door_entrance_home_icon.svg", info: "", categories: ["防疫專區", "DIY五金"]},
             {name: "鋁梯", src: "./img/sicon/7558292_stepladder_construction_home_icon.svg", info: "", categories: ["防疫專區", "百貨"]},
          ]
+      }
+   },
+   methods: {
+      onSlideStart(slide) {
+        this.sliding = true
+      },
+      onSlideEnd(slide) {
+        this.sliding = false
       }
    },
    created() {
