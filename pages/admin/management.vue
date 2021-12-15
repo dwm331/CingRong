@@ -1,22 +1,22 @@
 <template>
   <div class="wrapper">
-    <Header></Header>
+    <!-- <Header></Header> -->
     <div class="management_section">
       <ul v-for="(cat, catKey, catIndex) in categories" :key="catIndex">
         <li  v-for="(catItem, catItemIndex) in cat" :key="catItemIndex">{{catItem.name}}
-          <b-button size="sm" variant="outline-danger">x</b-button>
+          <b-button size="sm" variant="outline-danger" @click="deleteCategory">x</b-button>
           <ul>
             <li v-for="(subCatItem, subCatItemIndex) in catItem.subCategory" :key="subCatItemIndex">
               {{subCatItem.name}}
-              <b-button size="sm" variant="outline-danger">x</b-button>
+              <b-button size="sm" variant="outline-danger" @click="deleteSubCategory">x</b-button>
             </li>
             <li>
               <b-row class="my-1">
                 <b-col sm="2">
-                  <b-form-input class="col-sm" :placeholder="`${catItem.name}-新增子分類`"></b-form-input>
+                  <b-form-input class="col-sm" :placeholder="`${catItem.name}-新增子分類`" id="subCategory" v-model="tempSubCategoryName[catItemIndex]"></b-form-input>
                 </b-col>
                 <b-col sm="1">
-                  <b-button size="sm" variant="outline-primary">+</b-button>
+                  <b-button size="sm" variant="outline-primary" @click="addNewSubCategory(catItemIndex)">+</b-button>
                 </b-col>
               </b-row>
             </li>
@@ -44,7 +44,7 @@ export default {
     return {
       categories: [],
       tempCategoryName: "",
-      tempSubCategoryName: "",
+      tempSubCategoryName: [],
       categoryKey: ""
     };
   },
@@ -64,6 +64,21 @@ export default {
       this.tempCategoryName = "";
       this.$nuxt.refresh();
     },
+    addNewSubCategory(index) {
+      let tempCategory = 
+      {
+        name: this.tempSubCategoryName[index],
+        subCategory: [],
+      }
+      Object.values(this.categories).push(tempCategory);
+      DB.ref("Category").child(this.categoryKey).child(index).child("subCategory").push(tempCategory);
+      this.tempSubCategoryName[index] = "";
+      this.$nuxt.refresh();
+    },
+    deleteCategory() {
+    },
+    deleteSubCategory() {
+    }
   },
   async fetch() {
     var data = DB.ref("Category");
