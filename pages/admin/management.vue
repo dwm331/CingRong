@@ -4,11 +4,11 @@
     <div class="management_section">
       <ul v-for="(cat, catKey, catIndex) in categories" :key="catIndex">
         <li  v-for="(catItem, catItemIndex) in cat" :key="catItemIndex">{{catItem.name}}
-          <b-button size="sm" variant="outline-danger" @click="deleteCategory">x</b-button>
+          <b-button size="sm" variant="outline-danger" @click="deleteCategory(catItemIndex)">x</b-button>
           <ul>
             <li v-for="(subCatItem, subCatItemIndex) in catItem.subCategory" :key="subCatItemIndex">
               {{subCatItem.name}}
-              <b-button size="sm" variant="outline-danger" @click="deleteSubCategory">x</b-button>
+              <b-button size="sm" variant="outline-danger" @click="deleteSubCategory(catItemIndex,subCatItemIndex)">x</b-button>
             </li>
             <li>
               <b-row class="my-1">
@@ -75,9 +75,15 @@ export default {
       this.tempSubCategoryName[index] = "";
       this.$nuxt.refresh();
     },
-    deleteCategory() {
+    deleteCategory(index) {
+      // console.log("deleteCategory:","Category/"+this.categoryKey+"/"+index)
+      DB.ref("Category").child(this.categoryKey).child(index).remove();
+      this.$nuxt.refresh();
     },
-    deleteSubCategory() {
+    deleteSubCategory(index, subIndex) {
+      // console.log("deleteSubCategory:","Category/"+this.categoryKey+"/"+index+"/subCategory/"+subIndex)
+      DB.ref("Category").child(this.categoryKey).child(index).child("subCategory").child(subIndex).remove();
+      this.$nuxt.refresh();
     }
   },
   async fetch() {
