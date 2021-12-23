@@ -1,7 +1,8 @@
 <template>
   <div class="wrapper">
-    <!-- <Header></Header> -->
+    <Header showNav="true"></Header>
     <div class="management_section">
+      <h1>分類管理</h1>
       <ul v-for="(cat, catKey, catIndex) in categories" :key="catIndex">
         <li  v-for="(catItem, catItemIndex) in cat" :key="catItemIndex">{{catItem.name}}
           <b-button size="sm" variant="outline-danger" @click="deleteCategory(catItemIndex)">x</b-button>
@@ -38,7 +39,6 @@
 </template>
 <script>
 import { DB } from "~/services/fireinit.js";
-import Header from "~/components/Header.vue";
 export default {
   data() {
     return {

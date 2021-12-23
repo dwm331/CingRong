@@ -28,12 +28,12 @@ export default {
           if (data.status === "success") {
             const user = data.user;
             console.log("[Signed in]", this.formEmail);
-            window.location.href = './admin/management';
+            window.location.href = './admin/mCat';
           } else {
             console.log(error.message);
             const errorCode = error.code;
             const errorMessage = error.message;
-            window.location.href = './admin/management';
+            window.location.href = './admin/mCat';
           }
         });
     },
