@@ -17,10 +17,14 @@
                     <b-form-select-option :value="null">請選擇商品分類</b-form-select-option>
                     <b-form-select-option :value="catItemKey" v-for="(catItem, catItemKey, catItemIndex) in cat" :key="catItemIndex">{{catItem.name}}</b-form-select-option>
                 </b-form-select>
+                <b-form-select id="product_sub_cat" v-model="form.subCategory" class="mb-3" v-show="showSubCategory" required>
+                    <b-form-select-option :value="null">請選擇商品子分類</b-form-select-option>
+                    <b-form-select-option :value="catItemKey" v-for="(catItem, catItemKey, catItemIndex) in getSubCategory" :key="catItemIndex">{{catItem.name}}</b-form-select-option>
+                </b-form-select>
             </b-form-group>
             <b-form-group  class="col-3">
-                <b-button type="submit" variant="primary">Submit</b-button>
-                <b-button type="reset" variant="danger">Reset</b-button>
+                <b-button type="submit" variant="primary">送出</b-button>
+                <b-button type="reset" variant="danger">取消</b-button>
             </b-form-group>
         </b-form>
         <div>
@@ -46,12 +50,14 @@ export default {
       options: [],
       form: {
         category: null,
+        subCategory: null,
         name: '',
         src: '',
         info: ''
       },
       show: true,
-      fields: [{key: 'categoryName', label: '商品分類', sortable: true}, {key: 'name', label: '商品名稱', sortable: true}, {key: 'info', label: '說明', sortable: true}, {key: 'show_details', label: '操作', sortable: false}],
+      showSubCategory: false,
+      fields: [{key: 'categoryName', label: '商品分類', sortable: true}, {key: 'subCategoryName', label: '子分類', sortable: true}, {key: 'name', label: '商品名稱', sortable: true}, {key: 'info', label: '說明', sortable: true}, {key: 'show_details', label: '操作', sortable: false}],
       products: []
     };
   },
@@ -86,7 +92,23 @@ export default {
                 if(Object.keys(oneObj).length > 0){
                     for(var inputObj in oneObj){
                         if (inputObj == id) {
-                            return oneObj[inputObj]["name"]
+                            return oneObj[inputObj].name
+                        }
+                    }
+                }
+            }
+        }
+    },
+    getSubCategoryName(id, subId) {
+        if(Object.keys(this.categories).length > 0){
+            for(var p in this.categories){
+                let oneObj = this.categories[p]
+                if(Object.keys(oneObj).length > 0){
+                    for(var inputObj in oneObj){
+                        for(var inputSubObj in oneObj[inputObj].subCategory){
+                            if (inputObj == id && inputSubObj == subId) {
+                                return oneObj[inputObj].subCategory[inputSubObj].name
+                            }
                         }
                     }
                 }
@@ -123,6 +145,13 @@ export default {
   },
   created() {},
   computed: {
+    getSubCategory() {
+        if (this.form.category) {
+            let subCategories = this.categories[this.categoryKey][this.form.category]["subCategory"] || {};
+            this.showSubCategory = Object.keys(subCategories).length > 0;
+            return subCategories;
+        }
+    },
     getProducts() {
         var arr = []
         if(Object.keys(this.products).length > 0){
@@ -131,7 +160,9 @@ export default {
                 if(Object.keys(oneObj).length > 0){
                     for(var inputObj in oneObj){
                         let id = oneObj[inputObj]["category"]
+                        let subId = oneObj[inputObj]["subCategory"]
                         oneObj[inputObj]["categoryName"] = this.getCategoryName(id)
+                        oneObj[inputObj]["subCategoryName"] = this.getSubCategoryName(id, subId)
                         oneObj[inputObj]["productKey"] = inputObj
                         arr.push(oneObj[inputObj])
                     }
@@ -140,7 +171,7 @@ export default {
         }
         // console.log('arr',arr)
         return arr;
-      }
+    }
   }
 };
 
