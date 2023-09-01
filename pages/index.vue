@@ -7,7 +7,7 @@
           <div class="nav_title">商品分類</div>
           <ul class="first_layer" >
             <li v-for="(cat, catKey) in categories" :key="`cat_${catKey}`" :class="{hasSub: cat.subCategory}" @click="selectedCategory(catKey)">
-              <nuxt-link to="/" v-b-toggle="`wrap_subList-${catKey}`">{{ cat.name }}</nuxt-link>
+              <nuxt-link to="/" v-b-toggle="`wrap_subList-${catKey}`">{{ cat.name }} {{cat.subCategory?`(${Object.values(cat.subCategory).length})`: ''}}</nuxt-link>
               <b-collapse :id="'wrap_subList-' + catKey" role="tabpanel" class="wrap_subList" visible>
                 <ul class="second_layer">
                   <li v-for="(subCatItem, subCatItemKey) in cat.subCategory" :key="`cat_${catKey}_${subCatItemKey}`" class="subList" @click="selectedCategory(catKey, subCatItemKey)">
@@ -39,7 +39,7 @@
               </b-carousel-slide>
             </b-carousel>
           </div>
-          <div class="separator">商品列表</div>
+          <div class="separator">商品列表 <span style="color: #333; font-size: 14px;">{{Object.values(allProduct).length>0?`(共${Object.values(allProduct).length}筆商品)`:''}}</span></div>
           <b-card-group columns class="product_list row deck">
             <b-card
               class="product_card"
