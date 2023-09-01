@@ -205,7 +205,6 @@ export default {
     selectedCategory(id,subId) {
       this.selectedCat = id;
       this.selectedSubCat = subId || '';
-      console.log(id,subId)
       this.getProduct();
     },
     async getProduct() {
