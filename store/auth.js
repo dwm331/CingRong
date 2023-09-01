@@ -1,4 +1,5 @@
 import { auth } from '@/services/fireinit.js'
+import { signInWithEmailAndPassword } from "firebase/auth";
 
 export const state = () => ({
   user: null
@@ -8,7 +9,7 @@ export const mutations = {
 }
 export const actions = {
   signInWithEmail ({ commit }, payload) {
-    return auth.signInWithEmailAndPassword(payload.email, payload.password)
+    return signInWithEmailAndPassword(auth, payload.email, payload.password)
       .then(user => ({ ...user, status: 'success' }))
       .catch(e => ({ ...e, status: 'error' }))
   }

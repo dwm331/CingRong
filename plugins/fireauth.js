@@ -1,10 +1,11 @@
 import { auth } from '@/services/fireinit.js'
+import { onAuthStateChanged } from "firebase/auth";
 
 export default (context) => {
   const { store } = context
 
   return new Promise((resolve, reject) => {
-    auth.onAuthStateChanged((user) => {
+    onAuthStateChanged(auth, (user) => {
       if (user) {
         console.log("登陸狀態")
         return resolve(store.dispatch('saveUser', user))

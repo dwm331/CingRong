@@ -5,13 +5,13 @@
       <div class="bannder_section">
         <div class="menu">
           <div class="nav_title">商品分類</div>
-          <ul class="first_layer" v-for="(cat, catKey, catIndex) in categories" :key="catIndex">
-            <li v-for="(catItem, catItemKey, catItemIndex) in cat" :key="catItemIndex" :class="{hasSub: catItem.subCategory}" @click="selectedCategory(catItem.subCategory, catItemKey)">
-              <nuxt-link to="/" v-b-toggle="`wrap_subList-${catItem.name}`">{{ catItem.displayName }}</nuxt-link>
-              <b-collapse :id="'wrap_subList-' + catItem.name" role="tabpanel" class="wrap_subList">
+          <ul class="first_layer" >
+            <li v-for="(cat, catKey) in categories" :key="`cat_${catKey}`" :class="{hasSub: cat.subCategory}" @click="selectedCategory(catKey)">
+              <nuxt-link to="/" v-b-toggle="`wrap_subList-${catKey}`">{{ cat.name }}</nuxt-link>
+              <b-collapse :id="'wrap_subList-' + catKey" role="tabpanel" class="wrap_subList" visible>
                 <ul class="second_layer">
-                  <li v-for="(subCatItem, subCatItemKey, subCatItemIndex) in catItem.subCategory" :key="'sub' + subCatItemIndex" class="subList" @click="selectedCategory(subCatItem.subCategory, catItemKey, subCatItemKey)">
-                    <nuxt-link to="/" v-b-toggle="`wrap_detailList-${subCatItem.name}`">{{ subCatItem.displayName }}</nuxt-link>
+                  <li v-for="(subCatItem, subCatItemKey) in cat.subCategory" :key="`cat_${catKey}_${subCatItemKey}`" class="subList" @click="selectedCategory(catKey, subCatItemKey)">
+                    <nuxt-link to="/" v-b-toggle="`wrap_detailList-${subCatItem.name}`">{{ subCatItem.name }}</nuxt-link>
                   </li>
                 </ul>
               </b-collapse>
@@ -47,7 +47,7 @@
               :img-src="proItem.src"
               img-alt="Image"
               img-top
-              v-for="(proItem, proItemKey, proItemIndex) in getProducts" 
+              v-for="(proItem, proItemKey, proItemIndex) in allProduct" 
               :key="proItemIndex"
             >
               <b-card-text>{{ proItem.info }}</b-card-text>
@@ -56,7 +56,7 @@
               </b-card-text> -->
             </b-card>
           </b-card-group>
-          <div v-show="getProducts.length == 0">
+          <div v-show="allProduct.length == 0">
             <b-alert show variant="warning">沒有商品</b-alert>
           </div>
         </div>
@@ -68,6 +68,7 @@
 
 <script>
 import { DB } from "@/services/fireinit.js";
+import { ref, onValue, query, orderByChild, equalTo } from "firebase/database";
 export default {
   data() {
     return {
@@ -201,108 +202,49 @@ export default {
     onSlideEnd(slide) {
       this.sliding = false;
     },
-    selectedCategory(hasSub, id,subId) {
-      if (!hasSub) {
-        this.selectedCat = id;
-        this.selectedSubCat = subId;
-        this.$fetch();
-      }
+    selectedCategory(id,subId) {
+      this.selectedCat = id;
+      this.selectedSubCat = subId || '';
+      console.log(id,subId)
+      this.getProduct();
     },
-    getProductCountBy(hasSub, key, subKey) {
-      let products = this.allProduct[key] || {};
-      var count = 0
-      if (subKey) {
-        count = Object.values(products).filter((item) => { return item.subCategory == subKey}).length
-      } else {
-        count = Object.keys(products).length
-      }
-      return hasSub ? '' : `(${count})`
-    }
-  },
-  async fetch() {
-    var dataAP = DB.ref("Product");
-    this.allProduct = await dataAP.once("value", function (snapshot) {
-      console.log("All Product data num:", snapshot.numChildren());
-    });
-
-    if (this.allProduct.exists() > 0) {
-      var datago2 = JSON.stringify(this.allProduct);
-      this.allProduct = JSON.parse(datago2);
-    } else {
-      this.allProduct = [];
-    }
-
-    if (this.selectedCat > '' && this.selectedSubCat > '') {
-        var dataP = DB.ref("Product").child(this.selectedCat).orderByChild("subCategory").equalTo(this.selectedSubCat);
-    } else if (this.selectedCat > '') {
-        var dataP = DB.ref("Product").child(this.selectedCat);
-    } else {
-      var dataP = DB.ref("Product");
-    }
-    this.product = await dataP.once("value", function (snapshot) {
-      console.log("Product data num:", snapshot.numChildren());
-    });
-
-    if (this.product.exists() > 0) {
+    async getProduct() {
       if (this.selectedCat > '' && this.selectedSubCat > '') {
-        var datago3 = JSON.stringify([this.product]);
+        var dataPath =  query(ref(DB, `Product`), orderByChild('subCategory'), equalTo(this.selectedSubCat));
       } else if (this.selectedCat > '') {
-        var datago3 = JSON.stringify([this.product]);
+        var dataPath =  query(ref(DB, `Product`), orderByChild('category'), equalTo(this.selectedCat));
       } else {
-        var datago3 = JSON.stringify(this.product);
+        var dataPath = ref(DB, 'Product')
       }
-      this.product = JSON.parse(datago3);
-    } else {
-      this.product = [];
-    }
-    
-    var data = DB.ref("Category");
-    this.categories = await data.once("value", function (snapshot) {
-      console.log("Category data num:", snapshot.numChildren());
-    });
-
-    if (this.categories.exists() > 0) {
-      var datago = JSON.stringify(this.categories);
-      this.categories = JSON.parse(datago);
-      this.categoryKey = Object.keys(this.categories)[0];
-      var arr = []
-      if(Object.keys(this.categories).length > 0){
-          for(var p in this.categories){
-              let oneObj = this.categories[p]
-              if(Object.keys(oneObj).length > 0){
-                  for(var inputObj in oneObj){
-                    let hasSub = Object.keys(oneObj[inputObj].subCategory || {}).length > 0;
-                    let count = this.getProductCountBy(hasSub, inputObj)
-                    oneObj[inputObj]["displayName"] = `${oneObj[inputObj].name} ${count}`
-                    for(var inputSubObj in oneObj[inputObj].subCategory){
-                      let _hasSub = Object.keys(oneObj[inputObj].subCategory[inputSubObj].subCategory || {}).length > 0;
-                      let _count = this.getProductCountBy(_hasSub, inputObj, inputSubObj)
-                      oneObj[inputObj].subCategory[inputSubObj]["displayName"] = `${oneObj[inputObj].subCategory[inputSubObj].name} ${_count}` 
-                    }
-                  }
-              }
-          }
-      }
-    } else {
-      this.categories = [];
+      this.allProduct = [];
+      onValue(dataPath, (snapshot) => {
+        const productData = snapshot.val();
+        if (productData) {
+          var productJson = JSON.stringify(productData);
+          this.allProduct = JSON.parse(productJson);
+        } else {
+          this.allProduct = [];
+        }
+      }, {
+        onlyOnce: true
+      });
+    },
+    async getCategories() {
+      onValue(ref(DB, 'Category'), (snapshot) => {
+        const categoriesData = snapshot.val();
+        if (categoriesData) {
+          this.categories = categoriesData
+        } else {
+          this.categories = [];
+        }
+      }, {
+        onlyOnce: true
+      });
     }
   },
-  computed: {
-    getProducts() {
-      var arr = []
-      if(Object.keys(this.product).length > 0){
-          for(var p in this.product){
-              let oneObj = this.product[p]
-              if(Object.keys(oneObj).length > 0){
-                  for(var inputObj in oneObj){
-                      arr.push(oneObj[inputObj])
-                  }
-              }
-          }
-      }
-      // console.log('arr',arr)
-      return arr;
-    }
+  mounted() {
+    this.getProduct()
+    this.getCategories()
   }
 };
 </script>

@@ -1,21 +1,20 @@
+import { initializeApp } from "firebase/app";
+import { getDatabase } from 'firebase/database';
+import { getAuth } from "firebase/auth";
 
-// Before: version 8 (Old)import firebase from 'firebase/app';
-// import firebase from 'firebase/app';
-// import 'firebase/auth'
-// import 'firebase/database'
-
-// v9 compat packages are API compatible with v8 code
-import firebase from 'firebase/compat/app';
-import 'firebase/compat/auth';
-import 'firebase/compat/database';
-
-let config = {
+const firebaseConfig = {
   apiKey: "AIzaSyDK3syIsZD7QVpU3WZqPWIhYWFc0fY5MNs",
   authDomain: "cingrong-b8eed.firebaseapp.com",
   databaseURL: "https://cingrong-b8eed-default-rtdb.firebaseio.com",
-}
+  projectId: "cingrong-b8eed",
+  storageBucket: "cingrong-b8eed.appspot.com",
+  messagingSenderId: "272965203319",
+  appId: "1:272965203319:web:b5e7be36391905a25e5d72"
+};
 
-!firebase.apps.length ? firebase.initializeApp(config) : ''
-export const auth = firebase.auth()
-export const DB = firebase.database()
+// Initialize Firebase
+const firebase = initializeApp(firebaseConfig)
+export const auth = getAuth(firebase);
+export const DB = getDatabase(firebase);
 export default firebase
+

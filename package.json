@@ -16,11 +16,11 @@
     "bootstrap": "^4.6.0",
     "bootstrap-vue": "^2.21.2",
     "core-js": "^3.15.1",
-    "firebase": "^9.4.1",
+    "firebase": "^10.3.0",
     "nuxt": "^2.15.7",
     "push-dir": "^0.4.1",
     "sass": "^1.43.4",
-    "vue-fb-customer-chat": "^0.2.0"
+    "vue-fb-customer-chat": "^0.2.2"
   },
   "devDependencies": {
     "cross-env": "^7.0.3"

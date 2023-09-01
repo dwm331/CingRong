@@ -5,7 +5,7 @@
       <h1>商品管理</h1>
       <div>
         <h4>新增商品</h4>
-        <b-form @submit="onSubmit" @reset="onReset" v-if="show">
+        <b-form @submit="onSubmit" @reset="onReset">
             <b-form-group id="input-group-1" label="商品名稱:" label-for="product_name" class="col-3">
                 <b-form-input id="product_name" v-model="form.name" required></b-form-input>
             </b-form-group>
@@ -13,11 +13,11 @@
                 <b-form-input id="product_info" v-model="form.info"></b-form-input>
             </b-form-group>
             <b-form-group id="input-group-3" label="商品分類:" label-for="product_cat" class="col-3">
-                <b-form-select id="product_cat" v-model="form.category" class="mb-3" v-for="(cat, catKey, catIndex) in categories" :key="catIndex" required>
+                <b-form-select id="product_cat" v-model="form.category" class="mb-3"  required>
                     <b-form-select-option :value="null">請選擇商品分類</b-form-select-option>
-                    <b-form-select-option :value="catItemKey" v-for="(catItem, catItemKey, catItemIndex) in cat" :key="catItemIndex">{{catItem.name}}</b-form-select-option>
+                    <b-form-select-option :value="catKey" v-for="(cat, catKey, catIndex) in categories" :key="catIndex">{{cat.name}}</b-form-select-option>
                 </b-form-select>
-                <b-form-select id="product_sub_cat" v-model="form.subCategory" class="mb-3" v-show="showSubCategory" required>
+                <b-form-select id="product_sub_cat" v-model="form.subCategory" class="mb-3">
                     <b-form-select-option :value="null">請選擇商品子分類</b-form-select-option>
                     <b-form-select-option :value="catItemKey" v-for="(catItem, catItemKey, catItemIndex) in getSubCategory" :key="catItemIndex">{{catItem.name}}</b-form-select-option>
                 </b-form-select>
@@ -40,6 +40,7 @@
 </template>
 <script>
 import { DB } from "~/services/fireinit.js";
+import { ref, onValue, push, remove } from "firebase/database";
 export default {
   data() {
     return {
@@ -55,11 +56,20 @@ export default {
         src: '',
         info: ''
       },
-      show: true,
       showSubCategory: false,
-      fields: [{key: 'categoryName', label: '商品分類', sortable: true}, {key: 'subCategoryName', label: '子分類', sortable: true}, {key: 'name', label: '商品名稱', sortable: true}, {key: 'info', label: '說明', sortable: true}, {key: 'show_details', label: '操作', sortable: false}],
-      products: []
+      fields: [
+        {key: 'categoryName', label: '商品分類', sortable: true}, 
+        {key: 'subCategoryName', label: '子分類', sortable: true}, 
+        {key: 'name', label: '商品名稱', sortable: true}, 
+        {key: 'info', label: '說明', sortable: true}, 
+        {key: 'show_details', label: '操作', sortable: false}],
+      allProduct: []
     };
+  },
+  watch: {
+    "form.category" (val) {
+        this.form.subCategory = null
+    }
   },
   methods: {
     onSubmit(event) {
@@ -69,21 +79,30 @@ export default {
     },
     onReset(event) {
         event.preventDefault()
-        this.form.name = ''
-        this.form.info = ''
-        this.form.category = null
-        this.show = false
-        this.$nextTick(() => {
-            this.show = true
-        })
+        this.form = {category: null, subCategory: null, name: '', src: '', info: ''}
     },
     addProduct() {
-        DB.ref("Product").child(this.form.category).push(this.form);
-        this.$nuxt.refresh();
+        push(ref(DB, 'Product' ), this.form)
+        .then((data) => {
+            console.log('Data saved successfully!', data)
+            this.form = {category: null, subCategory: null, name: '', src: '', info: ''}
+            this.getProduct()
+        })
+        .catch((error) => {
+            console.log('Data saved error', error)
+        });
     },
     deleteProduct(row) {
-        DB.ref("Product").child(row.item.category).child(row.item.productKey).remove();
-        this.$nuxt.refresh();
+        if(!row.item) return
+        if(!row.item.productKey) return
+        remove(ref(DB, `Product/${row.item.productKey}`))
+        .then(() => {
+            console.log('Data remove successfully!')
+            this.getProduct()
+        })
+        .catch((error) => {
+            console.log('Data remove error', error)
+        });
     },
     getCategoryName(id) {
         if(Object.keys(this.categories).length > 0){
@@ -100,78 +119,56 @@ export default {
         }
     },
     getSubCategoryName(id, subId) {
-        if(Object.keys(this.categories).length > 0){
-            for(var p in this.categories){
-                let oneObj = this.categories[p]
-                if(Object.keys(oneObj).length > 0){
-                    for(var inputObj in oneObj){
-                        for(var inputSubObj in oneObj[inputObj].subCategory){
-                            if (inputObj == id && inputSubObj == subId) {
-                                return oneObj[inputObj].subCategory[inputSubObj].name
-                            }
-                        }
-                    }
-                }
-            }
+    },
+    async getProduct() {
+      var dataPath = ref(DB, 'Product')
+      this.allProduct = [];
+      onValue(dataPath, (snapshot) => {
+        const productData = snapshot.val();
+        if (productData) {
+          var productJson = JSON.stringify(productData);
+          this.allProduct = JSON.parse(productJson);
+        } else {
+          this.allProduct = [];
         }
+      }, {
+        onlyOnce: true
+      });
+    },
+    async getCategories() {
+      onValue(ref(DB, 'Category'), (snapshot) => {
+        const categoriesData = snapshot.val();
+        if (categoriesData) {
+          this.categories = categoriesData
+        } else {
+          this.categories = [];
+        }
+      }, {
+        onlyOnce: true
+      });
     }
   },
-  async fetch() {
-    var data = DB.ref("Category");
-    this.categories = await data.once("value", function (snapshot) {
-      console.log("Category data num:", snapshot.numChildren());
-    });
-
-    if (this.categories.exists() > 0) {
-      var datago = JSON.stringify(this.categories);
-      this.categories = JSON.parse(datago);
-      this.categoryKey = Object.keys(this.categories)[0];
-    } else {
-      this.categories = [];
-    }
-
-    var dataP = DB.ref("Product");
-    this.products = await dataP.once("value", function (snapshot) {
-        console.log("products data num:", snapshot.numChildren());
-    });
-
-    if (this.products.exists() > 0) {
-        var datago2 = JSON.stringify(this.products);
-        this.products = JSON.parse(datago2);
-        // this.productsKey = Object.keys(this.products)[0];
-    } else {
-        this.products = [];
-    }
-  },
-  created() {},
   computed: {
     getSubCategory() {
         if (this.form.category) {
-            let subCategories = this.categories[this.categoryKey][this.form.category]["subCategory"] || {};
+            let subCategories = this.categories[this.form.category]["subCategory"] || {};
             this.showSubCategory = Object.keys(subCategories).length > 0;
             return subCategories;
         }
     },
     getProducts() {
-        var arr = []
-        if(Object.keys(this.products).length > 0){
-            for(var p in this.products){
-                let oneObj = this.products[p]
-                if(Object.keys(oneObj).length > 0){
-                    for(var inputObj in oneObj){
-                        let id = oneObj[inputObj]["category"]
-                        let subId = oneObj[inputObj]["subCategory"]
-                        oneObj[inputObj]["categoryName"] = this.getCategoryName(id)
-                        oneObj[inputObj]["subCategoryName"] = this.getSubCategoryName(id, subId)
-                        oneObj[inputObj]["productKey"] = inputObj
-                        arr.push(oneObj[inputObj])
-                    }
-                }
-            }
-        }
-        // console.log('arr',arr)
-        return arr;
+        let vm = this;
+        return Object.keys(this.allProduct).map(key => {
+            let item = this.allProduct[key]
+            let categoryName = vm.categories[item.category]?vm.categories[item.category]["name"]:''
+            let subCategoryName = vm.categories[item.category]?vm.categories[item.category]["subCategory"]?vm.categories[item.category]["subCategory"][item.subCategory]["name"]:'':''
+            return {...item, productKey: key, categoryName: categoryName, subCategoryName: subCategoryName}
+        });
     }
+  },
+  mounted() {
+    this.getProduct();
+    this.getCategories()
   }
 };
 
