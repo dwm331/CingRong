@@ -21,6 +21,15 @@
                     <b-form-select-option :value="null">請選擇商品子分類</b-form-select-option>
                     <b-form-select-option :value="catItemKey" v-for="(catItem, catItemKey, catItemIndex) in getSubCategory" :key="catItemIndex">{{catItem.name}}</b-form-select-option>
                 </b-form-select>
+                <b-form-group id="product_sub_cat" v-model="form.subCategory" class="mb-3">
+                  <div class="custom-file">
+                    <input type="file" class="custom-file-input" id="inputItemImg" accept="image/*" @change="handleItemImg">
+                    <label class="custom-file-label" for="inputItemImg">上傳圖片</label>
+                  </div>
+                  <hr>
+                  <img id="itemImg" :src="form.src" class="img-fluid" alt="圖片預覽"/>
+                  <hr>
+                </b-form-group>
             </b-form-group>
             <b-form-group  class="col-3">
                 <b-button type="submit" variant="primary">送出</b-button>
@@ -58,10 +67,10 @@ export default {
       },
       showSubCategory: false,
       fields: [
-        {key: 'categoryName', label: '商品分類', sortable: true}, 
-        {key: 'subCategoryName', label: '子分類', sortable: true}, 
-        {key: 'name', label: '商品名稱', sortable: true}, 
-        {key: 'info', label: '說明', sortable: true}, 
+        {key: 'categoryName', label: '商品分類', sortable: true},
+        {key: 'subCategoryName', label: '子分類', sortable: true},
+        {key: 'name', label: '商品名稱', sortable: true},
+        {key: 'info', label: '說明', sortable: true},
         {key: 'show_details', label: '操作', sortable: false}],
       allProduct: []
     };
@@ -72,6 +81,18 @@ export default {
     }
   },
   methods: {
+    handleItemImg(event) {
+      const selectedImg =  event.target.files[0];
+      this.createBase64Img(selectedImg);
+    },
+    createBase64Img(fileObj) {
+      const reader = new FileReader();
+      reader.readAsDataURL(fileObj);
+      reader.onload = () => {
+        //console.log("file 转 base64结果：" + reader.result);
+        this.form.src = reader.result;
+      }
+    },
     onSubmit(event) {
         event.preventDefault()
         this.addProduct()
@@ -79,13 +100,13 @@ export default {
     },
     onReset(event) {
         event.preventDefault()
-        this.form = {category: null, subCategory: null, name: '', src: '', info: ''}
+        this.form = {category: null, subCategory: null, name: '', src: '', info: '', uploadImg: ''}
     },
     addProduct() {
         push(ref(DB, 'Product' ), this.form)
         .then((data) => {
             console.log('Data saved successfully!', data)
-            this.form = {category: null, subCategory: null, name: '', src: '', info: ''}
+            this.form = {category: null, subCategory: null, name: '', src: '', info: '', uploadImg: ''}
             this.getProduct()
         })
         .catch((error) => {
