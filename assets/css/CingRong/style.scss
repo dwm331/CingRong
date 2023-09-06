@@ -6,7 +6,7 @@ $colorBlack: #383838;
 $colorGray: #959595;
 .wrapper {
     .main {
-        margin: 100px 0;
+        margin: 70px 0;
         display: flex;
         flex-direction: column;
         justify-content: flex-start;
@@ -177,6 +177,11 @@ $colorGray: #959595;
                     .banner_title {
                         color: $colorlightYellow;
                     }
+                    .carousel-inner{
+                        img {
+                            height: 320px !important;
+                        }
+                    }
                 }
                 .separator {
                     margin: 20px 0;
@@ -202,6 +207,9 @@ $colorGray: #959595;
                     justify-content: space-around;
                     .product_card {
                         max-width: 16rem;
+                        img {
+                            height: 10rem;
+                        }
                     }
                     .product_tags {
                         font-size: 14px;

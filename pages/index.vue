@@ -4,7 +4,7 @@
     <div class="main">
       <div class="bannder_section">
         <div class="menu">
-          <div class="nav_title">商品分類</div>
+          <div class="nav_title">全站商品</div>
           <ul class="first_layer" >
             <li v-for="(cat, catKey) in categories" :key="`cat_${catKey}`" :class="{hasSub: cat.subCategory}" @click="selectedCategory(catKey)">
               <nuxt-link to="/" v-b-toggle="`wrap_subList-${catKey}`">{{ cat.name }} {{cat.subCategory?`(${Object.values(cat.subCategory).length})`: ''}}</nuxt-link>
@@ -27,8 +27,8 @@
               controls
               indicators
               background="#ababab"
-              img-width="1024"
-              img-height="480"
+              img-width="600"
+              img-height="200"
               style="text-shadow: 1px 1px 2px #333"
               @sliding-start="onSlideStart"
               @sliding-end="onSlideEnd"
