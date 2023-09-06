@@ -295,6 +295,10 @@ export default {
     }
   },
   mounted() {
+    if (!this.$store.state.user) {
+      this.$router.push('/admin')
+      return
+    }
     this.getProduct();
     this.getCategories()
   }

@@ -1,11 +1,14 @@
 <template>
   <div class="wrapper">
     <Header></Header>
-    <div class="login_section">
+    <client-only>
+      <div class="login_section" v-if="!this.$store.state.user">
+        <b-alert show variant="warning">尚未登入</b-alert>
         <input type="text" class="form-control" placeholder="帳號" v-model="formEmail">
         <input type="password" class="form-control" placeholder="密碼" v-model="formPassword">
         <button class="btn btn-primary" type="button" @click="login">登入</button>
-    </div>
+      </div>
+    </client-only>
   </div>
 </template>
 <script>
@@ -35,6 +38,11 @@ export default {
         })
     },
   },
+  mounted() {
+    if (this.$store.state.user) {
+      this.$router.push('/admin/mCat')
+    }
+  }
 };
 </script>
 <style>

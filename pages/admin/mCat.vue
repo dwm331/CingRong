@@ -118,8 +118,11 @@ export default {
   created() {
   },
   mounted() {
+    if (!this.$store.state.user) {
+      this.$router.push('/admin')
+      return
+    }
     this.getCategories()
-    // this.addNewCategory()
   }
 };
 </script>
