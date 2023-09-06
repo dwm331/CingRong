@@ -3,7 +3,7 @@ import { getDatabase } from 'firebase/database';
 import { getAuth } from "firebase/auth";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDK3syIsZD7QVpU3WZqPWIhYWFc0fY5MNs",
+  apiKey: "AIzaSyDi7nLofxFIQ9U8WwfRTe4wElZ3FOPm6a0",
   authDomain: "cingrong-b8eed.firebaseapp.com",
   databaseURL: "https://cingrong-b8eed-default-rtdb.firebaseio.com",
   projectId: "cingrong-b8eed",
