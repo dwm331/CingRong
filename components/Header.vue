@@ -7,7 +7,7 @@
                 <b-navbar-nav>
                     <b-nav-item href="/">首頁</b-nav-item>
                     <b-nav-item href="/admin/mCat">分類管理</b-nav-item>
-                    <b-nav-item href="/admin/mPro">商品管理</b-nav-item>
+                    <b-nav-item href="/admin/mPro">產品管理</b-nav-item>
                 </b-navbar-nav>
             </b-navbar>
         </div>
