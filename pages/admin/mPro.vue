@@ -112,7 +112,7 @@ export default {
         {key: 'show_details', label: '操作', sortable: false}],
       allProduct: [],
       imgurConfig: {
-        albumHash: "W3v7chF_pp",
+        albumHash: "W3v7chF",
         accessToken: null,
         account_username: null,
         expires_in: null,
