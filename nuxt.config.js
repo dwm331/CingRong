@@ -55,6 +55,7 @@ export default {
   modules: [
     // https://go.nuxtjs.dev/bootstrap
     'bootstrap-vue/nuxt',
+    '@nuxtjs/axios'
   ],
 
   vendor: [
@@ -63,5 +64,9 @@ export default {
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
+  },
+
+  axios: {
+    // Used as fallback if no runtime config is provided，https://axios.nuxtjs.org/options/
   }
 }

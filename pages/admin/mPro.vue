@@ -60,6 +60,8 @@
                 </b-form-select>
               </b-form-group>
               <b-form-group id="input-group-4" label="產品圖片:" label-for="product_src" class="text-dark font-weight-bold">
+                <h6 v-if="imgurConfig.account_username" class="text-primary m-0">登入帳號:{{imgurConfig.account_username}}</h6>
+                <a v-if="!imgurConfig.account_username" href="https://api.imgur.com/oauth2/authorize?response_type=token&client_id=e44a28476a6576b" target="_self">登入imgur</a>
                 <b-form-file id="product_src" accept="image/*" @change="handleItemImg"></b-form-file>
                 <b-img :src="form.src" fluid alt="圖片預覽"></b-img>
               </b-form-group>
@@ -76,6 +78,7 @@
   </div>
 </template>
 <script>
+import axios from 'axios'
 import { DB } from "~/services/fireinit.js";
 import { ref, onValue, push, remove, set, query, orderByChild, equalTo } from "firebase/database";
 export default {
@@ -107,7 +110,15 @@ export default {
         {key: 'name', label: '產品名稱', sortable: true},
         {key: 'info', label: '說明', sortable: true},
         {key: 'show_details', label: '操作', sortable: false}],
-      allProduct: []
+      allProduct: [],
+      imgurConfig: {
+        albumHash: "W3v7chF_pp",
+        accessToken: null,
+        account_username: null,
+        expires_in: null,
+        clientID: ""
+      },
+      uploadfile: null
     };
   },
   watch: {
@@ -124,6 +135,7 @@ export default {
   },
   methods: {
     handleItemImg(event) {
+      this.uploadfile = event.target.files[0];
       const selectedImg =  event.target.files[0];
       this.createBase64Img(selectedImg);
     },
@@ -137,11 +149,31 @@ export default {
     },
     onSubmit(event) {
       event.preventDefault()
+
+      // 有上傳檔案，才上傳
+      if(this.uploadfile != null) {
+        if(this.imgurConfig.accessToken == null) {
+          alert("請先登錄imgur");
+          return;
+        }
+
+        var uploadSt = this.uploadimage(this.uploadfile);
+        if(typeof uploadSt === 'object' && uploadSt.hasOwnProperty('data')) {
+          if(!uploadSt.data.success) {
+            alert("上傳發生錯誤" + uploadSt.data.error);
+            return;
+          }
+        } else {
+          alert("上傳發生錯誤" + uploadSt);
+          return;
+        }
+      }
+
       if (Boolean(this.form.productKey)) {
         this.editProduct(this.form)
       } else {
         this.addProduct(this.form)
-      } 
+      }
       this.onReset(event)
     },
     onReset(event) {
@@ -153,7 +185,7 @@ export default {
         category: item.category,
         subCategory: item.subCategory,
         name: item.name,
-        src: item.src,
+        src:  item.src,
         info: item.info
       })
       .then((data) => {
@@ -163,6 +195,7 @@ export default {
       })
       .catch((error) => {
         console.log('Data saved error', error)
+        this.delimage(this.from.scr)
       });
     },
     deleteProduct(row) {
@@ -172,6 +205,7 @@ export default {
         .then(() => {
             console.log('Data remove successfully!')
             this.getProduct()
+            this.delimage(this.from.scr)
         })
         .catch((error) => {
             console.log('Data remove error', error)
@@ -182,11 +216,11 @@ export default {
       if(!row.item.productKey) return
       this.form = {
         productKey: row.item.productKey,
-        category: row.item.category, 
-        subCategory: row.item.subCategory || null, 
+        category: row.item.category,
+        subCategory: row.item.subCategory || null,
         no: row.item.no,
-        name: row.item.name, 
-        src: row.item.src, 
+        name: row.item.name,
+        src: row.item.src,
         info: row.item.info
       }
     },
@@ -227,6 +261,7 @@ export default {
       })
       .catch((error) => {
         console.log('Data update error', error)
+        this.delimage(this.from.scr)
       });
     },
     getCategoryName(id) {
@@ -242,6 +277,114 @@ export default {
                 }
             }
         }
+    },
+    getUrlLoginInfo() {
+        // TODO: 存store
+
+        // 獲取完整的URL
+        var url = window.location.href;
+
+        // 使用正則表達式匹配access_token、expires_in和account_username
+        var tokenMatch = url.match(/access_token=([^&]+)/);
+        var expiresMatch = url.match(/expires_in=([^&]+)/);
+        var usernameMatch = url.match(/account_username=([^&]+)/);
+
+        // 檢查匹配是否成功
+        if (tokenMatch && expiresMatch && usernameMatch) {
+          // 提取access_token、expires_in和account_username
+          var accessToken = tokenMatch[1];
+          var expires_in = expiresMatch[1];
+          var accountUsername = usernameMatch[1];
+
+          // 打印提取的值
+          //console.log("Access Token:", accessToken);
+          //console.log("Expires In:", expires_in);
+          //console.log("Account Username:", accountUsername);
+
+          this.imgurConfig.accessToken = accessToken;
+          this.imgurConfig.account_username = accountUsername;
+          this.imgurConfig.expires_in = expires_in;
+
+          localStorage.setItem('imgurConfig', JSON.stringify(this.imgurConfig));
+
+        } else {
+          console.log("無法提取所需的參數。");
+        }
+    },
+    uploadimage(file) {
+      // 設置要發送的請求頭，包括Bearer Token
+      const headers = {
+        'Authorization': 'Bearer ' + this.imgurConfig.accessToken, // 將 'your_access_token_here' 替換為你的實際Bearer Token
+        'Content-Type': 'application/json', // 設置請求的內容類型
+      };
+
+      // 創建一個FormData對象來包含文件和其他數據
+      const formData = new FormData();
+      formData.append('image', file); // 'file'是你要上傳的文件字段，你需要將其替換為實際的字段名
+
+
+      // 設置要發送的數據（如果有的話）
+      const otherData = {
+        "album": this.imgurConfig.albumHash
+      };
+
+      // 發送POST請求的示例
+      axios.post('https://api.imgur.com/3/image', formData, { headers, params: otherData })
+        .then(response => {
+          // 請求成功後的處理
+          console.log('響應數據:', response.data);
+          if( response.data.success) {
+            // id: "qr1PHJG"，link: "https://i.imgur.com/qr1PHJG.jpg"
+            this.form.src = response.data.data.link
+            console.log("uploadimage", this.form)
+          } else {
+            alert("上傳imgur發生問題",  response.data.data.error)
+          }
+          return response.data;
+        })
+        .catch(error => {
+          // 請求失敗後的處理
+          console.error('請求失敗:', error);
+          return error;
+        });
+    },
+    delimage(srcurl) {
+      // 設置要發送的請求頭，包括Bearer Token
+      const headers = {
+        'Authorization': 'Bearer ' + this.imgurConfig.accessToken, // 將 'your_access_token_here' 替換為你的實際Bearer Token
+        'Content-Type': 'application/json', // 設置請求的內容類型
+      };
+
+      var imageHash = this.getFileNameFromUrl(url);
+
+      // 發送POST請求的示例
+      axios.delete('https://api.imgur.com/3/image/' + imageHash , null, { headers })
+        .then(response => {
+          // 請求成功後的處理
+          console.log('響應數據:', response.data);
+          if( response.data.success) {
+            // id: "qr1PHJG"，link: "https://i.imgur.com/qr1PHJG.jpg"
+          } else {
+            alert("刪除imgur發生問題",  response.data.data.error)
+          }
+        })
+        .catch(error => {
+          // 請求失敗後的處理
+          console.error('請求失敗:', error);
+        });
+    },
+    getFileNameFromUrl(url) {
+      // 使用正則表達式匹配URL中的文件名
+      const filenameMatch = url.match(/\/([^/]+)\.jpg$/i);
+
+      if (filenameMatch) {
+        // 獲取匹配到的文件名（不包括擴展名）
+        console.log('文件名:', filename);
+        return filenameMatch[1];
+      } else {
+        console.log('未找到文件名');
+        return "";
+      }
     },
     getSubCategoryName(id, subId) {
     },
@@ -271,7 +414,24 @@ export default {
       }, {
         onlyOnce: true
       });
-    }
+    },
+    async getAppSetting() {
+      var dataPath = ref(DB, 'AppSetting')
+      this.allProduct = [];
+      onValue(dataPath, (snapshot) => {
+        const AppSettingData = snapshot.val();
+        console.log(AppSettingData)
+        if (AppSettingData) {
+          this.imgurConfig.clientID = AppSettingData.IMGUR.CLIENTID;
+        } else {
+          this.imgurConfig.clientID = "";
+        }
+
+        console.log("getAppSetting", this.imgurConfig)
+      }, {
+        onlyOnce: true
+      });
+    },
   },
   computed: {
     getSubCategory() {
@@ -301,6 +461,17 @@ export default {
     }
     this.getProduct();
     this.getCategories()
+    this.getAppSetting();
+
+    // 檢查檢查網址  ，再localStorage
+    this.getUrlLoginInfo();
+    if( this.imgurConfig.accessToken == null ||  (this.imgurConfig.accessToken != null && this.imgurConfig.accessToken == "")) {
+      localStorage.setItem('imgurConfig', JSON.stringify(this.imgurConfig));
+      var cimgurConfig = JSON.parse(localStorage.getItem('imgurConfig'));
+      if(cimgurConfig.accessToken != null) {
+        this.imgurConfig = cimgurConfig
+      }
+    }
   }
 };
 
