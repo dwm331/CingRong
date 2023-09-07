@@ -425,7 +425,7 @@ export default {
         } else {
           this.imgurConfig.clientID = "";
         }
-
+        localStorage.setItem('imgurConfig', JSON.stringify(this.imgurConfig));
         console.log("getAppSetting", this.imgurConfig)
       }, {
         onlyOnce: true
