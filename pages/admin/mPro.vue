@@ -147,7 +147,7 @@ export default {
         this.form.src = reader.result;
       }
     },
-    onSubmit(event) {
+    async onSubmit(event) {
       event.preventDefault()
 
       // 有上傳檔案，才上傳
@@ -156,10 +156,9 @@ export default {
           alert("請先登錄imgur");
           return;
         }
-
-        var uploadSt = this.uploadimage(this.uploadfile);
-        if(typeof uploadSt === 'object' && uploadSt.hasOwnProperty('data')) {
-          if(!uploadSt.data.success) {
+        const uploadSt = await this.uploadimage(this.uploadfile);
+        if (typeof uploadSt === 'object' && uploadSt.hasOwnProperty('data')) {
+          if (!uploadSt.success) {
             alert("上傳發生錯誤" + uploadSt.data.error);
             return;
           }
@@ -311,7 +310,7 @@ export default {
           console.log("無法提取所需的參數。");
         }
     },
-    uploadimage(file) {
+    async uploadimage(file) {
       // 設置要發送的請求頭，包括Bearer Token
       const headers = {
         'Authorization': 'Bearer ' + this.imgurConfig.accessToken, // 將 'your_access_token_here' 替換為你的實際Bearer Token
@@ -322,14 +321,13 @@ export default {
       const formData = new FormData();
       formData.append('image', file); // 'file'是你要上傳的文件字段，你需要將其替換為實際的字段名
 
-
       // 設置要發送的數據（如果有的話）
       const otherData = {
         "album": this.imgurConfig.albumHash
       };
 
       // 發送POST請求的示例
-      axios.post('https://api.imgur.com/3/image', formData, { headers, params: otherData })
+      return await axios.post('https://api.imgur.com/3/image', formData, { headers, params: otherData })
         .then(response => {
           // 請求成功後的處理
           console.log('響應數據:', response.data);
@@ -340,6 +338,7 @@ export default {
           } else {
             alert("上傳imgur發生問題",  response.data.data.error)
           }
+
           return response.data;
         })
         .catch(error => {
@@ -463,13 +462,14 @@ export default {
     this.getCategories()
     this.getAppSetting();
 
-    // 檢查檢查網址  ，再localStorage
-    this.getUrlLoginInfo();
-    if( this.imgurConfig.accessToken == null ||  (this.imgurConfig.accessToken != null && this.imgurConfig.accessToken == "")) {
-      localStorage.setItem('imgurConfig', JSON.stringify(this.imgurConfig));
-      var cimgurConfig = JSON.parse(localStorage.getItem('imgurConfig'));
-      if(cimgurConfig.accessToken != null) {
-        this.imgurConfig = cimgurConfig
+    // 檢查localStorage  ，再檢查網址
+    var cimgurConfig = JSON.parse(localStorage.getItem('imgurConfig'));
+    if(cimgurConfig != null && cimgurConfig.accessToken != null) {
+      this.imgurConfig = cimgurConfig
+    } else {
+      this.getUrlLoginInfo();
+      if( this.imgurConfig.accessToken == null ||  (this.imgurConfig.accessToken != null && this.imgurConfig.accessToken == "")) {
+        localStorage.setItem('imgurConfig', JSON.stringify(this.imgurConfig));
       }
     }
   }
