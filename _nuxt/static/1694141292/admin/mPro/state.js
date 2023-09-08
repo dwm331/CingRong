@@ -1,0 +1,1 @@
+window.__NUXT__=(function(a){return {staticAssetsBase:"\u002FCingRong\u002F_nuxt\u002Fstatic\u002F1694141292",layout:"default",error:a,state:{user:a,auth:{user:a}},serverRendered:true,routePath:"\u002Fadmin\u002FmPro",config:{_app:{basePath:"\u002FCingRong\u002F",assetsPath:"\u002FCingRong\u002F_nuxt\u002F",cdnURL:a}}}}(null));
