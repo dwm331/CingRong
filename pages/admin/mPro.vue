@@ -275,6 +275,8 @@ export default {
                     }
                 }
             }
+        } else {
+          console.log("尚未讀取categories資料")
         }
     },
     getUrlLoginInfo() {
@@ -307,7 +309,7 @@ export default {
           localStorage.setItem('imgurConfig', JSON.stringify(this.imgurConfig));
 
         } else {
-          console.log("無法提取所需的參數。");
+          console.log("沒有imgur登入資訊，請先登入才能上傳圖片");
         }
     },
     async uploadimage(file) {
@@ -321,9 +323,19 @@ export default {
       const formData = new FormData();
       formData.append('image', file); // 'file'是你要上傳的文件字段，你需要將其替換為實際的字段名
 
+      var titkeCombinedString = "No." + (this.form.no ? ' ' + this.form.no : '') + "-" + this.form.name;
+
+      var category = this.categories[this.form.category] || {};
+      var subCategory = category.subCategory?.[this.form.subCategory] || {};
+      var categoryName = category.name || '';
+      var subCategoryName = subCategory.name || '';
+      var descriptionCombinedString = `${this.form.info} #${categoryName} #${subCategoryName}`;
+
       // 設置要發送的數據（如果有的話）
       const otherData = {
-        "album": this.imgurConfig.albumHash
+        "album": this.imgurConfig.albumHash,
+        "title": titkeCombinedString,
+        "description": descriptionCombinedString,
       };
 
       // 發送POST請求的示例
@@ -416,7 +428,6 @@ export default {
     },
     async getAppSetting() {
       var dataPath = ref(DB, 'AppSetting')
-      this.allProduct = [];
       onValue(dataPath, (snapshot) => {
         const AppSettingData = snapshot.val();
         console.log(AppSettingData)
